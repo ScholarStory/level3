@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3 Audio List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #2c3e50;
+        }
+        .audio-container {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .custom-audio {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .custom-audio button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #3498db;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .custom-audio button:hover {
+            background-color: #2980b9;
+        }
+        .audio-duration {
+            font-size: 14px;
+            color: #555;
+        }
+        #day-select {
+            display: block;
+            margin: 0 auto 20px auto;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            appearance: none;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        label[for="day-select"] {
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Level 3 Audio List</h1>
+    <div>
+        <label for="day-select">Select Day:</label>
+        <select id="day-select">
+            <option value="" selected disabled>Select Day</option>
+            <!-- Day 옵션들 -->
+            <option value="1">Day 1</option>
+            <option value="2">Day 2</option>
+            <option value="3">Day 3</option>
+            <option value="4">Day 4</option>
+            <option value="5">Day 5</option>
+            <option value="6">Day 6</option>
+            <option value="7">Day 7</option>
+            <option value="8">Day 8</option>
+            <option value="9">Day 9</option>
+            <option value="10">Day 10</option>
+            <option value="11">Day 11</option>
+            <option value="12">Day 12</option>
+            <option value="13">Day 13</option>
+            <option value="14">Day 14</option>
+            <option value="15">Day 15</option>
+            <option value="16">Day 16</option>
+            <option value="17">Day 17</option>
+            <option value="18">Day 18</option>
+            <option value="19">Day 19</option>
+            <option value="20">Day 20</option>
+            <option value="21">Day 21</option>
+            <option value="22">Day 22</option>
+            <option value="23">Day 23</option>
+            <option value="24">Day 24</option>
+        </select>
+    </div>
+
+    <!-- Audio 컨테이너들 -->
+    <div id="audio-container"></div>
+
+    <!-- Howler.js 라이브러리 포함 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const daySelect = document.getElementById('day-select');
+            const audioContainer = document.getElementById('audio-container');
+
+            daySelect.addEventListener('change', function() {
+                const day = this.value;
+                loadAudioFiles(day);
+            });
+
+            function loadAudioFiles(day) {
+                const vocaSrc = `audio/l3dv${day}.mp3`;
+                const diarySrc = `audio/l3dd${day}.mp3`;
+
+                const html = `
+                    <div class="audio-container">
+                        <h2>Level 3 - day ${day} voca</h2>
+                        <div class="custom-audio" data-audio-src="${vocaSrc}">
+                            <button class="play-button">Play</button>
+                            <span class="audio-duration">0:00</span>
+                        </div>
+                    </div>
+                    <div class="audio-container">
+                        <h2>Level 3 - day ${day} diary</h2>
+                        <div class="custom-audio" data-audio-src="${diarySrc}">
+                            <button class="play-button">Play</button>
+                            <span class="audio-duration">0:00</span>
+                        </div>
+                    </div>
+                `;
+
+                audioContainer.innerHTML = html;
+                initializeAudioPlayers();
+            }
+
+            function initializeAudioPlayers() {
+                const audioContainers = document.querySelectorAll('.custom-audio');
+                audioContainers.forEach(container => {
+                    const audioSrc = container.getAttribute('data-audio-src');
+                    const playButton = container.querySelector('.play-button');
+                    const audioDuration = container.querySelector('.audio-duration');
+
+                    const sound = new Howl({
+                        src: [audioSrc],
+                        html5: true,
+                        onload: function() {
+                            const duration = sound.duration();
+                            audioDuration.textContent = formatTime(duration);
+                        }
+                    });
+
+                    playButton.addEventListener('click', function() {
+                        if (sound.playing()) {
+                            sound.pause();
+                            playButton.textContent = 'Play';
+                        } else {
+                            sound.play();
+                            playButton.textContent = 'Pause';
+                        }
+                    });
+
+                    sound.on('end', function() {
+                        playButton.textContent = 'Play';
+                    });
+
+                    function formatTime(seconds) {
+                        const minutes = Math.floor(seconds / 60);
+                        const secs = Math.floor(seconds % 60);
+                        return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
